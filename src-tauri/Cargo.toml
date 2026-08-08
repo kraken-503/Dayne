@@ -1,6 +1,6 @@
 [package]
 name = "dayne"
-version = "0.1.1"
+version = "0.1.2"
 description = "Minimal desktop wallpaper application"
 authors = ["Dayne Team"]
 edition = "2021"
