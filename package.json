@@ -1,0 +1,25 @@
+{
+  "name": "dayne",
+  "private": true,
+  "version": "0.1.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "test": "vitest run",
+    "release": "bumpp package.json src-tauri/tauri.conf.json src-tauri/Cargo.toml --all"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.0.2",
+    "@tauri-apps/cli": "^2.0.0",
+    "bumpp": "^12.2.0",
+    "svelte": "^4.2.12",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0"
+  }
+}
