@@ -22,8 +22,8 @@
   <div class="image-wrapper">
     {#if imageError}
       <div class="error-placeholder">
-        <i class="fa-solid fa-triangle-exclamation error-icon"></i>
-        <span>Image Not Available</span>
+        <i class="fa-solid fa-image-slash error-icon"></i>
+        <span>Preview unavailable</span>
       </div>
     {:else}
       <img 
@@ -32,42 +32,41 @@
         loading="lazy" 
         on:error={() => imageError = true}
       />
-      <div class="overlay">
-        <span class="view-btn"><i class="fa-solid fa-expand"></i> Preview</span>
+      <div class="gradient-overlay"></div>
+      <div class="card-action">
+        <span class="preview-badge"><i class="fa-solid fa-expand"></i> Inspect</span>
       </div>
     {/if}
   </div>
   <div class="card-info">
-    <span class="title">{wallpaper.title}</span>
-    <span class="badge">{wallpaper.category}</span>
+    <span class="title" title={wallpaper.title}>{wallpaper.title}</span>
+    <span class="category-tag">{wallpaper.category}</span>
   </div>
 </div>
 
 <style>
   .card {
-    background: var(--ctp-surface0);
-    border: 1px solid var(--ctp-surface1);
-    border-radius: 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                box-shadow 0.3s ease, 
-                border-color 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: var(--card-shadow);
     outline: none;
     position: relative;
   }
 
-  .card:hover, .card:focus {
-    transform: translateY(-6px) scale(1.02);
-    border-color: var(--ctp-mauve);
-    box-shadow: 0 12px 24px -8px rgba(17, 11, 27, 0.6),
-                0 0 16px rgba(203, 166, 247, 0.2);
+  .card:hover, .card:focus-visible {
+    transform: translateY(-5px);
+    border-color: var(--border-color-hover);
+    box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.35);
   }
 
   .image-wrapper {
     width: 100%;
-    height: 170px;
-    background: var(--ctp-mantle);
+    height: 180px;
+    background: var(--bg-crust);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -79,44 +78,55 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   .card:hover .image-wrapper img {
-    transform: scale(1.08);
+    transform: scale(1.06);
   }
 
-  .overlay {
+  .gradient-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(17, 17, 27, 0.55);
-    backdrop-filter: blur(2px);
+    background: linear-gradient(to top, rgba(17, 17, 27, 0.7) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .card:hover .gradient-overlay {
+    opacity: 1;
+  }
+
+  .card-action {
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.3s ease;
   }
 
-  .card:hover .overlay {
+  .card:hover .card-action {
     opacity: 1;
   }
 
-  .view-btn {
-    background: var(--ctp-mauve);
-    color: var(--ctp-crust);
-    padding: 0.45rem 1rem;
-    border-radius: 20px;
+  .preview-badge {
+    background: var(--accent-color);
+    color: var(--bg-crust);
+    padding: 0.45rem 1.1rem;
+    border-radius: 99px;
     font-size: 0.8rem;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    transform: translateY(8px);
-    transition: transform 0.25s ease;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    transform: translateY(6px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .card:hover .view-btn {
+  .card:hover .preview-badge {
     transform: translateY(0);
   }
 
@@ -124,38 +134,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    color: var(--ctp-red);
+    gap: 0.5rem;
+    color: var(--text-sub);
     font-size: 0.8rem;
   }
 
-  .error-icon {
-    font-size: 1.2rem;
-  }
-
   .card-info {
-    padding: 0.85rem 1rem;
+    padding: 0.95rem 1.1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: var(--ctp-surface0);
+    background: var(--bg-surface);
   }
 
   .title {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 500;
-    color: var(--ctp-text);
+    color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 140px;
+    max-width: 150px;
   }
 
-  .badge {
+  .category-tag {
     font-size: 0.7rem;
-    background: var(--ctp-surface1);
-    color: var(--ctp-subtext0);
-    padding: 0.2rem 0.5rem;
+    color: var(--text-sub);
+    background: var(--bg-mantle);
+    border: 1px solid var(--border-color);
+    padding: 0.2rem 0.55rem;
     border-radius: 6px;
+    font-weight: 500;
   }
 </style>

@@ -52,7 +52,9 @@
 <div class="shell">
   <header class="navbar">
     <div class="brand">
-      <i class="fa-solid fa-skull skull-icon"></i>
+      <div class="logo-badge">
+        <i class="fa-solid fa-skull skull-icon"></i>
+      </div>
       <h1 class="classy-logo">Dayne</h1>
     </div>
 
@@ -62,12 +64,17 @@
         <input 
           class="search-input" 
           type="text" 
-          placeholder="Search wallpapers..." 
+          placeholder="Search catalog..." 
           bind:value={searchQuery} 
         />
+        {#if searchQuery}
+          <button class="clear-search" on:click={() => searchQuery = ''}>
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        {/if}
       </div>
 
-      <button class="theme-toggle" on:click={toggleTheme} title="Toggle Dark/Light Mode">
+      <button class="theme-toggle" on:click={toggleTheme} title="Toggle Theme">
         {#if theme === 'dark'}
           <i class="fa-solid fa-sun"></i>
         {:else}
@@ -84,7 +91,8 @@
         class:active={selectedCategory === 'All'} 
         on:click={() => selectedCategory = 'All'}
       >
-        All ({wallpapersList.length})
+        <span>All</span>
+        <span class="count-badge">{wallpapersList.length}</span>
       </button>
       {#each manifest.categories as cat}
         <button 
@@ -92,7 +100,7 @@
           class:active={selectedCategory === cat} 
           on:click={() => selectedCategory = cat}
         >
-          {cat}
+          <span>{cat}</span>
         </button>
       {/each}
     </nav>
@@ -101,17 +109,21 @@
   <main class="grid-container">
     {#if loading}
       <div class="status-container">
-        <i class="fa-solid fa-circle-notch fa-spin spinner"></i>
-        <p>Loading wallpapers...</p>
+        <div class="loader-ring"></div>
+        <p>Fetching collection...</p>
       </div>
     {:else if errorMsg}
       <div class="error-box">
-        <h3>Catalog Error</h3>
-        <code>{errorMsg}</code>
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div class="error-content">
+          <h3>Unable to load catalog</h3>
+          <code>{errorMsg}</code>
+        </div>
       </div>
     {:else if filteredWallpapers.length === 0}
       <div class="status-container">
-        <p>No wallpapers found in catalog.</p>
+        <i class="fa-solid fa-ghost empty-icon"></i>
+        <p>No wallpapers match your criteria.</p>
       </div>
     {:else}
       <div class="grid">
@@ -145,37 +157,53 @@
     color: var(--text-main);
   }
 
+  /* Glassmorphic Navbar */
   .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.85rem 1.75rem;
-    background-color: var(--bg-mantle);
+    padding: 0.9rem 2rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
+    z-index: 10;
   }
 
   .brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.85rem;
+  }
+
+  .logo-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--card-shadow);
   }
 
   .skull-icon {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     color: var(--accent-color);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .brand:hover .skull-icon {
-    transform: rotate(-10deg) scale(1.1);
+    transform: rotate(-12deg) scale(1.15);
   }
 
   .classy-logo {
     font-family: var(--font-brand);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     margin: 0;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     color: var(--text-main);
     text-transform: uppercase;
   }
@@ -183,7 +211,7 @@
   .nav-controls {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.85rem;
   }
 
   .search-box {
@@ -194,71 +222,98 @@
 
   .search-icon {
     position: absolute;
-    left: 0.85rem;
+    left: 0.9rem;
     color: var(--text-sub);
     font-size: 0.85rem;
+    pointer-events: none;
   }
 
   .search-input {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    padding: 0.5rem 0.85rem 0.5rem 2.2rem;
-    border-radius: 8px;
+    padding: 0.55rem 2.2rem 0.55rem 2.3rem;
+    border-radius: 10px;
     width: 220px;
     outline: none;
     font-size: 0.85rem;
-    transition: border-color 0.25s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .search-input:focus {
+    width: 260px;
     border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(203, 166, 247, 0.15);
+  }
+
+  .clear-search {
+    position: absolute;
+    right: 0.6rem;
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0.2rem;
   }
 
   .theme-toggle {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
-    transition: background 0.2s, border-color 0.2s;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
   }
 
   .theme-toggle:hover {
     background: var(--bg-surface-hover);
-    border-color: var(--accent-color);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
   }
 
+  /* Sleek Floating Categories Bar */
   .categories {
     display: flex;
-    gap: 0.6rem;
-    padding: 0.75rem 1.75rem;
-    background-color: var(--bg-crust);
+    gap: 0.5rem;
+    padding: 0.8rem 2rem;
+    background: var(--bg-crust);
     border-bottom: 1px solid var(--border-color);
     overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .categories::-webkit-scrollbar {
+    display: none;
   }
 
   .chip {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-sub);
-    padding: 0.35rem 0.9rem;
-    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    border-radius: 99px;
     font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .chip:hover {
     background: var(--bg-surface-hover);
     color: var(--text-main);
+    border-color: var(--border-color-hover);
+    transform: translateY(-1px);
   }
 
   .chip.active {
@@ -266,18 +321,26 @@
     color: var(--bg-crust);
     font-weight: 600;
     border-color: transparent;
+    box-shadow: 0 4px 12px rgba(203, 166, 247, 0.25);
+  }
+
+  .count-badge {
+    background: rgba(0, 0, 0, 0.15);
+    padding: 0.15rem 0.45rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
   }
 
   .grid-container {
     flex: 1;
     overflow-y: auto;
-    padding: 1.75rem;
+    padding: 2rem;
   }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.35rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
   }
 
   .status-container {
@@ -285,23 +348,39 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 300px;
+    height: 350px;
     color: var(--text-sub);
     gap: 1rem;
   }
 
-  .spinner {
-    font-size: 1.8rem;
-    color: var(--accent-color);
+  .loader-ring {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .empty-icon {
+    font-size: 2rem;
+    opacity: 0.5;
   }
 
   .error-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
     background: var(--error-bg);
     border: 1px solid var(--error-color);
     color: var(--error-color);
-    padding: 1.25rem;
-    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
     margin: 2rem auto;
     max-width: 600px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 </style>

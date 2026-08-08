@@ -23,7 +23,7 @@
         message = 'Wallpaper applied successfully!';
         messageType = 'success';
       } else {
-        message = 'Set wallpaper function is only available inside Tauri desktop window.';
+        message = 'Set wallpaper is only available inside the desktop application.';
         messageType = 'error';
       }
     } catch (err: any) {
@@ -39,18 +39,26 @@
     downloading = true;
     message = '';
     try {
-      const a = document.createElement('a');
-      a.href = originalUrl;
-      a.download = wallpaper.files.original;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const response = await fetch(originalUrl);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const blob = await response.blob();
+      const fileName = wallpaper.files.original.split('/').pop() || `${wallpaper.id}.png`;
+      const blobUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
 
-      message = 'Download started!';
+      message = 'Download complete!';
       messageType = 'success';
-    } catch (err) {
-      message = 'Failed to trigger download.';
+    } catch (err: any) {
+      console.error('Download error:', err);
+      message = 'Failed to download image.';
       messageType = 'error';
     } finally {
       downloading = false;
@@ -72,7 +80,7 @@
       <div class="meta">
         <h2>{wallpaper.title}</h2>
         <span class="details">
-          {wallpaper.dimensions?.width}x{wallpaper.dimensions?.height} • {wallpaper.category}
+          {wallpaper.dimensions?.width} × {wallpaper.dimensions?.height} px • {wallpaper.category}
         </span>
       </div>
 
@@ -88,8 +96,11 @@
           on:click={handleDownload} 
           disabled={downloading}
         >
-          <i class="fa-solid fa-download"></i>
-          {downloading ? 'Downloading...' : 'Download'}
+          {#if downloading}
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Downloading...
+          {:else}
+            <i class="fa-solid fa-download"></i> Download
+          {/if}
         </button>
 
         <button 
@@ -98,7 +109,7 @@
           disabled={applying}
         >
           {#if applying}
-            <i class="fa-solid fa-spinner fa-spin"></i> Applying...
+            <i class="fa-solid fa-circle-notch fa-spin"></i> Applying...
           {:else}
             <i class="fa-solid fa-desktop"></i> Set Wallpaper
           {/if}
@@ -111,39 +122,40 @@
 <style>
   .backdrop {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: var(--modal-backdrop);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    padding: 1.5rem;
+    padding: 2rem;
     box-sizing: border-box;
+    animation: fadeIn 0.2s ease-out;
   }
 
   .modal {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 20px;
     width: 100%;
-    max-width: 800px;
+    max-width: 850px;
     max-height: 85vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5);
+    animation: popUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .close-btn {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--bg-mantle);
+    top: 1.2rem;
+    right: 1.2rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border-color);
     color: var(--text-main);
     width: 36px;
@@ -153,15 +165,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 0.95rem;
     z-index: 10;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
   }
 
   .close-btn:hover {
     background: var(--error-color);
     color: #fff;
     border-color: transparent;
+    transform: scale(1.05);
   }
 
   .image-container {
@@ -170,19 +183,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 250px;
+    min-height: 280px;
     max-height: 55vh;
     overflow: hidden;
+    padding: 1rem;
   }
 
   .image-container img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    border-radius: 8px;
   }
 
   .modal-footer {
-    padding: 1.25rem 1.5rem;
+    padding: 1.25rem 1.75rem;
     background: var(--bg-mantle);
     display: flex;
     justify-content: space-between;
@@ -194,7 +209,7 @@
 
   .meta h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-family: var(--font-brand);
     letter-spacing: 1px;
     color: var(--text-main);
@@ -207,8 +222,9 @@
 
   .status-msg {
     font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
+    padding: 0.4rem 0.85rem;
+    border-radius: 8px;
+    font-weight: 500;
   }
 
   .status-msg.success {
@@ -229,8 +245,8 @@
   }
 
   .btn {
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
@@ -238,7 +254,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: transform 0.2s;
+    transition: all 0.2s ease;
   }
 
   .download-btn {
@@ -247,8 +263,9 @@
     border: 1px solid var(--border-color);
   }
 
-  .download-btn:hover {
+  .download-btn:hover:not(:disabled) {
     background: var(--bg-surface-hover);
+    border-color: var(--border-color-hover);
     transform: translateY(-2px);
   }
 
@@ -257,7 +274,23 @@
     color: var(--bg-crust);
   }
 
-  .apply-btn:hover {
+  .apply-btn:hover:not(:disabled) {
     transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(203, 166, 247, 0.3);
+  }
+
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes popUp {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
   }
 </style>
