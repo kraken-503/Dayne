@@ -1,23 +1,68 @@
 :root {
-  --bg-primary: #0f0f11;
-  --bg-surface: #18181b;
-  --border-subtle: #27272a;
-  --text-primary: #f4f4f5;
-  --text-muted: #a1a1aa;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  /* Classy Font Variables */
+  --font-brand: 'Cinzel', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
+/* Dark Mode Theme (Default Catppuccin Mocha) */
+[data-theme="dark"] {
+  --bg-base: #1e1e2e;
+  --bg-mantle: #181825;
+  --bg-crust: #11111b;
+  --bg-surface: #313244;
+  --bg-surface-hover: #45475a;
+  --border-color: #45475a;
+  
+  --text-main: #cdd6f4;
+  --text-sub: #a6adc8;
+  --accent-color: #cba6f7;
+  --accent-secondary: #89b4fa;
+  --modal-backdrop: rgba(17, 17, 27, 0.85);
+  --error-bg: rgba(243, 139, 168, 0.15);
+  --error-color: #f38ba8;
+}
+
+/* Light Mode Theme (Catppuccin Latte) */
+[data-theme="light"] {
+  --bg-base: #eff1f5;
+  --bg-mantle: #e6e9ef;
+  --bg-crust: #dce0e8;
+  --bg-surface: #ccd0da;
+  --bg-surface-hover: #bcc0cc;
+  --border-color: #bcc0cc;
+  
+  --text-main: #4c4f69;
+  --text-sub: #6c6f85;
+  --accent-color: #8839ef;
+  --accent-secondary: #1e66f5;
+  --modal-backdrop: rgba(230, 233, 239, 0.85);
+  --error-bg: rgba(210, 15, 57, 0.12);
+  --error-color: #d20f39;
+}
+
+:global(html, body) {
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  overflow: hidden;
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  overflow: hidden;
-  user-select: none;
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-mantle);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-surface);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-surface-hover);
 }
