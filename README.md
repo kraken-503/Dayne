@@ -61,8 +61,8 @@ npm run tauri build
 >Build outputs will be generated in the src-tauri/target/release directory.
 
 ### Contributing
-Contributions, feature requests, and bug reports are welcome. Please review the contribution guidelines or open an issue to discuss proposed changes before submitting a pull request.
+Contributions, feature requests, and bug reports are welcome. Please review the [contribution guidelines](CONTRIBUTING.md) or open an issue to discuss proposed changes before submitting a pull request.
 <br>
 
 ### License
-Distributed under the GNU General Public License v3.0 (GPL-3.0). Refer to the LICENSE file for full terms and conditions.
+Distributed under the GNU General Public License v3.0 (GPL-3.0). Refer to the [LICENSE](LICENSE) file for full terms and conditions.
