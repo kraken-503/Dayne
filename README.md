@@ -1,6 +1,6 @@
 # Dayne
 
-A high-performance, cross-platform desktop application inspired by Wallpaper Engine, built for browsing, downloading, and managing dynamic wallpapers seamlessly across Linux, Windows, and macOS.
+A high-performance, cross-platform desktop application inspired by Wallpaper Engine, built for browsing, downloading, and managing wallpapers seamlessly across Linux, Windows, and macOS.
 
 ---
 
@@ -19,7 +19,7 @@ Dayne is built using modern web technologies paired with a native backend via **
 ## Key Features
 
 * **Cross-Platform Compatibility**: Native execution and optimized resource usage on Linux, Windows, and macOS.
-* **Dynamic Content Management**: Browse, preview, and apply interactive or static wallpapers effortlessly.
+* **Dynamic Content Management**: Browse, preview, and apply wallpapers effortlessly.
 * **Integrated Download Manager**: Robust retrieval system for fetching wallpaper packages directly within the application workspace.
 * **Low Resource Footprint**: Powered by a Rust backend to ensure minimal CPU and memory consumption during playback.
 
